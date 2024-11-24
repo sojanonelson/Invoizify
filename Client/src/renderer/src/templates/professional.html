@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* General Page Style */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px; /* Keeps the content within page width */
+            margin: 0 auto;
+        }
+
+        /* Styling for print view */
+        @media print {
+            body {
+                font-size: 12px; /* Adjust font size for better printing */
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%; /* Ensure full-width on A4 paper */
+                padding: 20px;
+                margin: 0;
+            }
+
+            header {
+                padding: 10px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            table th, table td {
+                padding: 8px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            table th {
+                background-color: #f1f1f1;
+            }
+
+            footer {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            /* Hide elements for print */
+            .no-print {
+                display: none;
+            }
+
+            /* Adjust for A4 page */
+            @page {
+                size: A4;
+                margin: 20mm; /* Set margin for A4 paper */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container">
+        <!-- Header Section -->
+        <header class="bg-blue-600 text-white p-4 rounded-lg mb-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold">Invoizify</h1>
+                    <p>Trivandrum, Kerala 695123</p>
+                </div>
+                <div class="text-right">
+                    <p>GSTIN: 32ABCD1234E1Z5</p>
+                    <p>Phone: +91 9876543210</p>
+                    <p>Email: support@invoizify.com</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Invoice Details Section -->
+        <div class="mb-4">
+            <div class="flex justify-between">
+                <div>
+                    <p><strong>Invoice To:</strong></p>
+                    <p>Ali Pharma</p>
+                    <p>Tuthersery Bhagam, M.C. Road, Adoor</p>
+                    <p>Kerala 691523</p>
+                </div>
+                <div class="text-right">
+                    <p><strong>Invoice #:</strong> INV-12345</p>
+                    <p><strong>Date:</strong> 03-Oct-2024</p>
+                    <p><strong>Order #:</strong> 46</p>
+                    <p><strong>Pay Type:</strong> Credit</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="table-auto w-full border-collapse mb-6">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Item</th>
+                    <th>HSN</th>
+                    <th>Batch</th>
+                    <th>Qty</th>
+                    <th>MRP</th>
+                    <th>Total</th>
+                    <th>GST (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Paracetamol 500mg</td>
+                    <td>300490</td>
+                    <td>B123</td>
+                    <td>10</td>
+                    <td>₹45.00</td>
+                    <td>₹450.00</td>
+                    <td>18%</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Amoxicillin 500mg</td>
+                    <td>300440</td>
+                    <td>C456</td>
+                    <td>5</td>
+                    <td>₹75.00</td>
+                    <td>₹375.00</td>
+                    <td>18%</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Cetirizine 10mg</td>
+                    <td>300490</td>
+                    <td>D786</td>
+                    <td>8</td>
+                    <td>₹20.00</td>
+                    <td>₹160.00</td>
+                    <td>12%</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Ibuprofen 200mg</td>
+                    <td>300320</td>
+                    <td>A123</td>
+                    <td>5</td>
+                    <td>₹50.00</td>
+                    <td>₹600.00</td>
+                    <td>18%</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Loratadine 10mg</td>
+                    <td>300570</td>
+                    <td>B789</td>
+                    <td>10</td>
+                    <td>₹25.00</td>
+                    <td>₹375.00</td>
+                    <td>12%</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Ciprofloxacin 500mg</td>
+                    <td>300490</td>
+                    <td>C543</td>
+                    <td>7</td>
+                    <td>₹80.00</td>
+                    <td>₹560.00</td>
+                    <td>18%</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Aspirin 100mg</td>
+                    <td>300510</td>
+                    <td>D213</td>
+                    <td>15</td>
+                    <td>₹12.00</td>
+                    <td>₹240.00</td>
+                    <td>18%</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Vitamin C 500mg</td>
+                    <td>300420</td>
+                    <td>B987</td>
+                    <td>20</td>
+                    <td>₹10.00</td>
+                    <td>₹200.00</td>
+                    <td>12%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Total Price Section -->
+        <div class="text-right mb-6">
+            <p><strong>Subtotal:</strong> ₹3100.00</p>
+            <p><strong>CGST (9%):</strong> ₹270.90</p>
+            <p><strong>SGST (9%):</strong> ₹270.90</p>
+            <p class="font-bold"><strong>Total:</strong> ₹3551.80</p>
+        </div>
+
+        <footer class="text-center mt-6">
+            <p>Thank you for your business!</p>
+            <p>This is a computer-generated invoice and does not require a signature.</p>
+        </footer>
+    </div>
+</body>
+</html>
