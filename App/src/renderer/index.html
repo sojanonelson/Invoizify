@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoizify User</title>
+    <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  connect-src 'self' http://localhost:5000 https://api.razorpay.com https://lumberjack-cx.razorpay.com/beacon/v1/batch https://lumberjack.razorpay.com/v1/track;
+  script-src 'self' 'unsafe-inline' https://checkout.razorpay.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: https://via.placeholder.com;
+  font-src 'self' https://fonts.gstatic.com;
+  base-uri 'self';
+  object-src 'none';
+  frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com;
+  upgrade-insecure-requests;
+">
+
+
+  
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  </body>
+</html>
