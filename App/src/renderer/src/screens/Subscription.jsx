@@ -35,12 +35,12 @@ const Subscription = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-start justify-start py-10 bg-gray-100 text-gray-900 px-10">
+    <div className="max-h-screen flex flex-col items-start justify-start py-10 bg-gray-100  text-gray-900 lg:px-10">
       <h1 className="text-3xl font-bold mb-8">Subscription Plans</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full px-32 pt-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full  lg:px-32 pt-10">
         {/* Free Plan */}
-        <div className="bg-white text-gray-800 shadow-lg rounded-lg h-[60vh] flex flex-col p-6">
+        <div className="bg-white text-gray-800 shadow-lg rounded-lg flex flex-col p-6 h-auto">
           <h3 className="text-3xl font-semibold text-blue-500 mb-2">Free</h3>
           <p className="text-2xl font-bold">₹0/month</p>
           <p className="text-sm text-gray-500 mb-4">(10% Platform Fee)</p>
@@ -61,7 +61,7 @@ const Subscription = () => {
         </div>
 
         {/* Pro Plan */}
-        <div className="bg-gray-800 text-white shadow-lg rounded-lg h-[70vh] flex flex-col p-6">
+        <div className="bg-gray-800 text-white shadow-lg rounded-lg flex flex-col p-6 h-auto ">
           <h3 className="text-3xl font-semibold text-purple-400 mb-2">Pro</h3>
           <p className="text-xl text-gray-400 line-through">₹7,500/month</p>
           <p className="text-2xl font-bold">₹6,000/month</p>
@@ -84,7 +84,7 @@ const Subscription = () => {
         </div>
 
         {/* Enterprise Plan */}
-        <div className="bg-white text-gray-800 shadow-lg rounded-lg h-[60vh] flex flex-col p-6">
+        <div className="bg-white text-gray-800 shadow-lg rounded-lg flex flex-col p-6 h-auto">
           <h3 className="text-3xl font-semibold text-indigo-500 mb-2">Enterprise</h3>
           <p className="text-xl text-gray-500 line-through">₹50,000/month</p>
           <p className="text-2xl font-bold">₹40,000/month</p>
@@ -100,7 +100,7 @@ const Subscription = () => {
           </ul>
           <button
             onClick={() => handlePayment(40000)}
-            className="mt-4 bg-indigo-500 text-white py-2 px-6 rounded-lg hover:bg-indigo-600 self-start"
+            className=" bg-indigo-500 text-white py-2 mt-32 px-6 rounded-lg hover:bg-indigo-600 self-start"
           >
             Buy Now
           </button>

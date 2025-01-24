@@ -19,6 +19,9 @@ const Invoice = () => {
   const [paymentTerms, setPaymentTerms] = useState("30 days");
   const [notes, setNotes] = useState("");
 
+  // User's plan state (basic plan for this example)
+  const [userPlan, setUserPlan] = useState("basic"); // Change to "premium" for upgraded users
+
   const addNewClient = () => {
     if (newClientName) {
       setClients([...clients, newClientName]);
@@ -43,20 +46,23 @@ const Invoice = () => {
   };
 
   return (
-    <div className="bg-gray-100 h-screen p-8 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-md p-8 max-w-full mx-auto w-full h-full">
-        <h1 className="text-3xl font-semibold mb-6 flex items-center justify-start">
-          <FiFileText className="mr-2" /> Create Invoice
-        </h1>
+    <div className="bg-gray-100 h-screen p-10 overflow-y-auto flex justify-center">
+      <div className="bg-white rounded-lg shadow-lg p-10 max-w-4xl w-full">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-10">
+          <h1 className="text-4xl font-bold text-gray-800 flex items-center">
+            <FiFileText className="mr-3 text-blue-600" /> Create Invoice
+          </h1>
+        </div>
 
         {/* Client Section */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Select Client (To):</label>
-          <div className="flex items-center mb-4">
+        <div className="mb-8">
+          <label className="block text-lg font-medium text-gray-700 mb-2">Client:</label>
+          <div className="flex items-center gap-4">
             <select
               value={selectedClient}
               onChange={(e) => setSelectedClient(e.target.value)}
-              className="block w-1/3 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">-- Select Client --</option>
               {clients.map((client, index) => (
@@ -67,76 +73,65 @@ const Invoice = () => {
             </select>
             <button
               onClick={() => setShowNewClientInput(true)}
-              className="ml-4 px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center"
+              className="px-5 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 flex items-center gap-2"
             >
-              <FiPlus className="mr-2" /> Add New Client
+              <FiPlus /> Add New
             </button>
           </div>
           {showNewClientInput && (
-            <div className="mt-4 flex items-center">
+            <div className="mt-4 flex items-center gap-4">
               <input
                 type="text"
                 placeholder="Enter new client name"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
-                className="w-1/3 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
               />
               <button
                 onClick={addNewClient}
-                className="ml-4 px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600"
+                className="px-5 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
               >
-                Add
+                Add Client
               </button>
             </div>
           )}
         </div>
 
-        {/* Invoice Date Section */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Invoice Date:</label>
-          <input
-            type="date"
-            value={invoiceDate}
-            onChange={(e) => setInvoiceDate(e.target.value)}
-            className="w-1/3 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        {/* Payment Terms Section */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Payment Terms:</label>
-          <select
-            value={paymentTerms}
-            onChange={(e) => setPaymentTerms(e.target.value)}
-            className="block w-1/3 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="30 days">30 Days</option>
-            <option value="60 days">60 Days</option>
-            <option value="90 days">90 Days</option>
-            <option value="Due on receipt">Due on receipt</option>
-          </select>
-        </div>
-
-        {/* Notes Section */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Notes:</label>
-          <textarea
-            rows="4"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Add any additional notes here"
-          />
+        {/* Date and Payment Terms */}
+        <div className="grid grid-cols-2 gap-8 mb-8">
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Invoice Date:</label>
+            <input
+              type="date"
+              value={invoiceDate}
+              onChange={(e) => setInvoiceDate(e.target.value)}
+              className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Payment Terms:</label>
+            <select
+              value={paymentTerms}
+              onChange={(e) => setPaymentTerms(e.target.value)}
+              className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="30 days">30 Days</option>
+              <option value="60 days">60 Days</option>
+              <option value="90 days">90 Days</option>
+              <option value="Due on receipt">Due on receipt</option>
+            </select>
+          </div>
         </div>
 
         {/* Product Section */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Select Product:</label>
-          <div className="flex items-center">
+        <div className="mb-8">
+          <label className="block text-lg font-medium text-gray-700 mb-2">Products:</label>
+          <div className="flex items-center gap-4">
             <select
               value={selectedProduct}
               onChange={(e) => setSelectedProduct(e.target.value)}
-              className="block w-1/3 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+              disabled={userPlan === "basic"} // Disable for basic plan
             >
               <option value="">-- Select Product --</option>
               {products.map((product, index) => (
@@ -150,55 +145,76 @@ const Invoice = () => {
               min="1"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="ml-4 w-24 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
+              className="w-24 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
               placeholder="Qty"
+              disabled={userPlan === "basic"} // Disable for basic plan
             />
             <button
               onClick={addProductToInvoice}
-              className="ml-4 px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center"
+              className="px-5 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center gap-2"
+              disabled={userPlan === "basic"} // Disable for basic plan
             >
-              <FiCheckCircle className="mr-2" /> Add
+              <FiCheckCircle /> Add
             </button>
           </div>
         </div>
 
         {/* Invoice Items */}
-        <div className="mb-6">
-          <h2 className="text-lg font-medium mb-4">Invoice Items:</h2>
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Invoice Items:</h2>
           {invoiceItems.length > 0 ? (
-            <ul>
+            <ul className="bg-gray-50 p-4 rounded-lg shadow">
               {invoiceItems.map((item, index) => (
-                <li key={index} className="flex justify-between items-center mb-4">
+                <li
+                  key={index}
+                  className="flex justify-between items-center py-2 border-b last:border-none"
+                >
                   <span>{item.name} (x{item.quantity})</span>
                   <span>₹{item.price * item.quantity}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p>No items added yet.</p>
+            <p className="text-gray-500">No items added yet.</p>
           )}
         </div>
 
-        {/* Extra Charges Section */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Extra Charges:</label>
-          <input
-            type="number"
-            value={extraCharges}
-            onChange={(e) => setExtraCharges(e.target.value)}
-            className="w-1/3 p-3 border rounded-md focus:ring focus:ring-blue-500 focus:border-blue-500"
+        {/* Extra Charges and Total */}
+        <div className="grid grid-cols-2 gap-8 mb-10">
+          <div>
+            <label className="block text-lg font-medium text-gray-700 mb-2">Extra Charges:</label>
+            <input
+              type="number"
+              value={extraCharges}
+              onChange={(e) => setExtraCharges(e.target.value)}
+              className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+              disabled={userPlan === "basic"} // Disable for basic plan
+            />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800">Total:</h2>
+            <p className="text-2xl font-bold text-gray-900 mt-2">₹{calculateTotal()}</p>
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div className="mb-8">
+          <label className="block text-lg font-medium text-gray-700 mb-2">Notes:</label>
+          <textarea
+            rows="4"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter any additional notes"
           />
         </div>
 
-        {/* Total Section */}
-        <div className="mb-6">
-          <h2 className="text-lg font-medium">Total: ₹{calculateTotal()}</h2>
+        {/* Submit Button */}
+        <div className="flex justify-center">
+          <button className="px-6 py-3 bg-blue-600 text-white text-lg rounded-lg shadow hover:bg-blue-700">
+            Generate Invoice
+          </button>
         </div>
-
-        {/* Create Invoice Button */}
-        <button className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-          Create Invoice
-        </button>
       </div>
     </div>
   );

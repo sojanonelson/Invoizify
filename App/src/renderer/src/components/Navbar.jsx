@@ -5,7 +5,8 @@ import { MdDashboard, MdSettings, MdHelp, MdLogout, MdNotifications } from "reac
 import { FaBars } from "react-icons/fa"; // Menu icon
 import { BsWifi, BsWifiOff } from "react-icons/bs"; // Network icons
 import Logo from "../assets/logo.png"; // Logo path
-import Profile from "../assets/profile.png";
+
+import { getProfilePicture } from "../services/generalService";
 // import { checkInternetConnection } from "../utils/networkConfirm"; // Your utility function
 // import TutorialOverlay from "../screens/TutorialOverlay"; // Import the tutorial overlay component
 
@@ -15,6 +16,7 @@ const Navbar = ({ref, onMenuClick }) => {
   const [showNotifications, setShowNotifications] = useState(false); // For notifications dropdown
   const [isOnline, setIsOnline] = useState(true); // For network status
   const [showTutorial, setShowTutorial] = useState(false); // State to trigger tutorial overlay
+  const [profilePicture, setProfilePicture] = useState("https://i.ibb.co/mztbSF6/profile.png");
   const [notifications, setNotifications] = useState([
     { id: 1, message: "Invoice #1234 has been approved." },
     { id: 2, message: "Reminder: Invoice #5678 is due tomorrow." },
@@ -38,8 +40,27 @@ const Navbar = ({ref, onMenuClick }) => {
   //   return () => clearInterval(interval);
   // }, []);
 
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const response = await getProfilePicture(user?.id || "6772af23fe13fcc845d1e3be");
+        if (response?.profile) {
+          setProfilePicture(response.profile);
+        }
+      } catch (err) {
+        console.error("Error fetching profile picture:", err);
+      }
+    };
+
+    if (user) {
+      fetchProfilePicture();
+    }
+  }, [user]);
+
+
   return (
-    <nav ref={ref} className="w-full select-none py-3 px-6 flex justify-between items-center bg-black border-gray-900 text-white border-b-2">
+    <div ref={ref} className="w-full select-none py-2 px-1  flex justify-between items-center bg-black border-gray-900 text-white border-b-2">
       {/* Logo and App Name */}
       <div className="flex items-center space-x-2">
         <img src={Logo} alt="Logo" className="h-8 w-8" />
@@ -48,7 +69,7 @@ const Navbar = ({ref, onMenuClick }) => {
 
       {/* Network Status */}
       <div className="flex items-center space-x-6">
-        <div className="flex select-none items-center space-x-2 bg-slate-100 rounded-xl p-1 px-2">
+        {/* <div className="flex select-none items-center space-x-2 bg-slate-100 rounded-xl p-1 px-2">
           {isOnline ? (
             <BsWifi className="text-green-600 text-lg" />
           ) : (
@@ -57,7 +78,7 @@ const Navbar = ({ref, onMenuClick }) => {
           <span className={`font-medium ${isOnline ? "text-green-600" : "text-red-600"}`}>
             {isOnline ? "Online" : "Offline"}
           </span>
-        </div>
+        </div> */}
 
         {/* Notification Icon */}
         <div className="relative">
@@ -118,12 +139,13 @@ const Navbar = ({ref, onMenuClick }) => {
                 className="text-lg font-medium focus:outline-none"
                 onClick={() => setShowDropdown(!showDropdown)}
               >
-                <img
-                  className="w-10 select-none rounded-full"
-                  src={Profile}
-                  alt="Profile"
-                  onClick={() => setShowTutorial(true)} // Trigger tutorial when profile is clicked
-                />
+              <img
+  className="w-10 h-10 object-cover overflow-hidden select-none rounded-full"
+  src={profilePicture}
+  alt="Profile"
+  onClick={() => setShowTutorial(true)} // Trigger tutorial when profile is clicked
+/>
+
               </button>
               {showDropdown && (
                 <div className="absolute right-0 top-full mt-3 w-48 bg-white shadow-lg rounded-lg">
@@ -180,7 +202,7 @@ const Navbar = ({ref, onMenuClick }) => {
 
       {/* Tutorial Overlay Component */}
       {/* {< showTutorial && TutorialOverlay onClose={() => setShowTutorial(false)} />} */}
-    </nav>
+    </div>
   );
 };
 

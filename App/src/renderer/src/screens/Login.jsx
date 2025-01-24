@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <div className="flex flex-row h-screen bg-gray-100">
      {/* Left Section: Login */}
-<div className="w-2/5 h-full flex flex-col items-center justify-between bg-white shadow-lg">
+<div className="w-2/5 h-full flex flex-col pd-10 items-center justify-between bg-white shadow-lg">
   <div className="w-full max-w-md p-6 pt-[40%]">
     <div className="text-center mb-6">
       <img src={Logo} alt="App Logo" className="w-24 mx-auto" />

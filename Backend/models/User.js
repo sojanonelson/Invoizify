@@ -11,7 +11,8 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['wholesaler', 'retailer','admin'], required: true },
   profilePicture: { type: String, required: false },
-  subscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription' }
+  subscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription' },
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

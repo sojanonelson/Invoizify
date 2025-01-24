@@ -11,6 +11,7 @@ const PartySchema = new mongoose.Schema({
   partyType: { type: String, enum: ['wholesaler', 'retailer'], required: true },
   creditPeriod: { type: Number, required: true },
   creditLimit: { type: Number, required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Party', PartySchema);

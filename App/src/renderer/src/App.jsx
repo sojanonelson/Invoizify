@@ -4,7 +4,7 @@ import '../src/styles/App.css'
 function App() {
 
   return (
-    <div className=' '>
+    <div className=' overflow-y-hidden menu-container '>
       <AppRouter/>
     </div>
   )

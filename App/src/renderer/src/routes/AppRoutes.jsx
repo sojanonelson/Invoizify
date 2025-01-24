@@ -18,7 +18,12 @@ import Register from '../screens/Register'
 import PartiesManagement from '../screens/Parties';
 import Subscription from '../screens/Subscription';
 
+
 const App = () => {
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') ;
+  });
   // const [user, setUser] = useState(null);
   
 
@@ -40,30 +45,31 @@ const App = () => {
 
   return (
     <Router future={{ v7_startTransition: true }}>
+     
       <Routes>
       
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Login  theme={theme} />} />
         <Route path="/user/login" element={<Navigate to="/" replace />} />
-        <Route path="/register" element={<Register />}  />
+        <Route path="/register" element={<Register  theme={theme} />}  />
 
        
         <Route
           path="/user/*"
           element={
-            <UserLayout>
+            <UserLayout >
               <Routes>
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="support" element={<Support />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="reports" element={<Reports />} />
-                <Route path="item" element={<Item />} />
-                <Route path="invoice" element={<InvoiceHome />} />
-                <Route path="invoice/create" element={<InvoiceCreate />} />
-                <Route path="about" element={<About />} />
-                <Route path="payment" element={<Payment/>} />
-                <Route path="parties" element={<PartiesManagement/>} />
-                <Route path="subscription" element={<Subscription/>} />
+                <Route path="dashboard" element={<Dashboard theme={theme} />} />
+                <Route path="notifications" element={<Notifications  theme={theme}/>} />
+                <Route path="support" element={<Support  theme={theme} />} />
+                <Route path="settings" element={<Settings  theme={theme} />} />
+                <Route path="reports" element={<Reports  theme={theme} />} />
+                <Route path="item" element={<Item  theme={theme} />} />
+                <Route path="invoice" element={<InvoiceHome  theme={theme} />} />
+                <Route path="invoice/create" element={<InvoiceCreate  theme={theme}  />} />
+                <Route path="about" element={<About  theme={theme} />} />
+                <Route path="payment" element={<Payment  theme={theme}/>} />
+                <Route path="parties" element={<PartiesManagement  theme={theme}/>} />
+                <Route path="subscription" element={<Subscription  theme={theme}/>} />
                 
                 
               </Routes>

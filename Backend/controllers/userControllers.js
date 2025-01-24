@@ -45,13 +45,14 @@ const generateToken = (id) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
+console.log(email,password)
   // Check if both email and password are provided
   if (!email || !password) {
     return res.status(400).json({ message: 'Please provide both email and password' });
   }
 
   try {
+    
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -67,8 +68,10 @@ const loginUser = async (req, res) => {
           _id: user.id,
           name: user.name,
           email: user.email,
+          profile: user.profilePicture,
           role: user.role,
           token: generateToken(user.id),
+          
         }
       });
     } else {

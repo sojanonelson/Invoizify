@@ -3,14 +3,28 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import http from 'http'
+
+
+const server = http.createServer();
+
+server.on('clientError', (err, socket) => {
+  console.error('Client Error:', err.message);
+  socket.destroy(); // Properly destroy the socket
+});
+
+server.listen(5173);
+
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1300,
-    height: 870,
+    // width: 1300,
+    // height: 870,
     minWidth: 1300, // Minimum width
-    minHeight: 870,
+    minHeight: 970,
     show: false,
+    
     autoHideMenuBar: true,
     icon: join(__dirname, '../../resources/icon.png'),
     ...(process.platform === 'linux' ? { icon } : {}),

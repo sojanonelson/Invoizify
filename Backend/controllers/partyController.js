@@ -14,10 +14,22 @@ const createParty = async (req, res) => {
     creditPeriod,
     creditLimit,
   } = req.body;
+  
+ 
+
+  console.log("Received Data:", shopName, fssaiCode);
+  
 
   // Validate input
-  if (!shopName || !ownerName || !gstNumber || !fssaiCode || !phone || !email || !drugLicence || !partyType || !creditPeriod || !creditLimit) {
+  if (
+    !shopName || !ownerName || !gstNumber || !fssaiCode || !phone || 
+    !email || !drugLicence || !partyType || !creditPeriod || !creditLimit
+  ) {
     return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ message: 'Unauthorized: User information is missing' });
   }
 
   try {
@@ -37,8 +49,9 @@ const createParty = async (req, res) => {
       email,
       drugLicence,
       partyType,
-      creditPeriod,
-      creditLimit,
+      creditPeriod: parseInt(creditPeriod, 10),
+      creditLimit: parseInt(creditLimit, 10),
+      createdBy: req.user.id,
     });
 
     await party.save();
@@ -48,9 +61,11 @@ const createParty = async (req, res) => {
       party,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    console.error('Server error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 // Update Party Controller
 const updateParty = async (req, res) => {
@@ -132,7 +147,29 @@ const getParty = async(req,res) => {
         console.log(err)
     }
 }
+
+const getAllPartiesByUser = async (req, res) => {
+  const { id } = req.params; 
+  console.log("hhe", id)
+
+  try {
+    // Find all parties where the `createdBy` field matches the provided userId
+    const parties = await Party.find({ createdBy: id });
+
+    // Check if there are no parties found
+    if (!parties.length) {
+      return res.status(404).json({ message: 'No parties found for this user' });
+    }
+
+    // Respond with the list of parties
+    res.status(200).json(parties);
+  } catch (error) {
+    // Handle server errors
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
   
   
 
-module.exports = { createParty ,updateParty, deleteParty , getParty};
+module.exports = { createParty ,updateParty, deleteParty , getParty,getAllPartiesByUser};

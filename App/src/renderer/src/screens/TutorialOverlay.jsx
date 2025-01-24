@@ -75,7 +75,7 @@ const TutorialOverlay = ({ onClose }) => {
     <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 flex justify-center items-center z-50">
       {/* Display the Welcome Card if tutorial is active and step is 0 */}
       {step === 0 && isTutorialActive && (
-        <div className="p-6 rounded-lg shadow-lg text-center bg-gray-800 text-white w-72">
+        <div className="p-6 rounded-lg shadow-lg text-center bg-gray-800 text-white w-2/5 py-32">
           <h2 className="text-xl font-bold mb-4">Welcome to the App!</h2>
           <p className="mb-4">Let's take a quick tour of the app.</p>
           <button

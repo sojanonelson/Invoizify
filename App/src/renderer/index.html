@@ -2,13 +2,19 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Invoizify User</title>
+    <title>Invoizify</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+
+
     <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  connect-src 'self' http://localhost:5000 https://api.razorpay.com https://lumberjack-cx.razorpay.com/beacon/v1/batch https://lumberjack.razorpay.com/v1/track;
+  connect-src 'self' http://localhost:5000 https://invoizify.onrender.com https://i.ibb.co https://api.razorpay.com https://lumberjack-cx.razorpay.com/beacon/v1/batch https://lumberjack.razorpay.com/v1/track;
   script-src 'self' 'unsafe-inline' https://checkout.razorpay.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  img-src 'self' data: https://via.placeholder.com;
+  img-src 'self' data: https://via.placeholder.com https://i.ibb.co https://masterbundles.com https://res.cloudinary.com ;
   font-src 'self' https://fonts.gstatic.com;
   base-uri 'self';
   object-src 'none';
@@ -24,6 +30,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
 
   </body>
 </html>

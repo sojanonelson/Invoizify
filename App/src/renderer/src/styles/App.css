@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.menu-container {
+    transition: transform 0.3s ease-in-out; /* Smooth animation */
+  }

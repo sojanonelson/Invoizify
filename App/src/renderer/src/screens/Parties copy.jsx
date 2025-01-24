@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Loader2, Search, PlusCircle, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Search, PlusCircle,RefreshCw  } from "lucide-react";
 import { createParty, getAllParty } from "../services/partyService";
 
 const ManageParties = () => {
@@ -9,10 +9,7 @@ const ManageParties = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [filterType, setFilterType] = useState('All');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [partiesPerPage, setPartiesPerPage] = useState(14);
-
+  const [isRefreshing, setIsRefreshing] = useState(false); 
   const [newParty, setNewParty] = useState({
     shopName: "ABAB",
     ownerName: "BABA",
@@ -34,63 +31,69 @@ const ManageParties = () => {
     }));
   };
 
-    const handleCreateParty = async () => {
-      try {
-        const response = await createParty(newParty);
-        if (response) {
-          setIsCreateModalOpen(false);
-          // Optionally refresh parties list
-        } else {
-          setError(response.message);
-        }
-      } catch (err) {
-        setError(err.message);
+  console.log("C:", newParty)
+
+  const fetchParties = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllParty('6772af23fe13fcc845d1e3be');
+      if (response) {
+        setParties(response.data);
+      } else {
+        setParties([]);
       }
-    };
+    } catch (err) {
+      setError(err.message || 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false); // Stop animation after refresh
+    }
+  };
 
-    const fetchParties = async () => {
-      setLoading(true);
-      try {
-        const response = await getAllParty('6772af23fe13fcc845d1e3be');
-        if (response) {
-          setParties(response.data);
-        } else {
-          setParties([]);
-        }
-      } catch (err) {
-        setError(err.message || 'An unexpected error occurred');
-      } finally {
-        setLoading(false);
-        setIsRefreshing(false); // Stop animation after refresh
+  useEffect(() => {
+    fetchParties();
+  }, []);
+
+  const refreshHandler = async () => {
+    setIsRefreshing(true);
+  
+    // Set a timeout for at least 3 seconds
+    setTimeout(async () => {
+      await fetchParties(); // Call your data-fetching function
+      setIsRefreshing(false);
+    }, 3000); // 3 seconds delay
+  };
+  
+  
+
+  const handleCreateParty = async () => {
+    try {
+      const response = await createParty(newParty);
+      if (response) {
+        setIsCreateModalOpen(false);
+        // Optionally refresh parties list
+      } else {
+        setError(response.message);
       }
-    };
-  
-    useEffect(() => {
-      fetchParties();
-    }, []);
-  
-    const refreshHandler = async () => {
-      setIsRefreshing(true);
-    
-      // Set a timeout for at least 3 seconds
-      setTimeout(async () => {
-        await fetchParties(); // Call your data-fetching function
-        setIsRefreshing(false);
-      }, 1000); // 3 seconds delay
-    };
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-    const renderNoPartiesContent = () => (
-      <div className="text-center py-10 bg-gray-800 rounded-lg">
-        <h2 className="text-2xl text-gray-400 mb-4">No Parties Found</h2>
-        <button 
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center mx-auto space-x-2"
-        >
-          <PlusCircle className="mr-2" /> Create First Party
-        </button>
-      </div>
-    );
+  // Render content when no parties found
+  const renderNoPartiesContent = () => (
+    <div className="text-center py-10 bg-gray-800 rounded-lg">
+      <h2 className="text-2xl text-gray-400 mb-4">No Parties Found</h2>
+      <button 
+        onClick={() => setIsCreateModalOpen(true)}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex items-center mx-auto space-x-2"
+      >
+        <PlusCircle className="mr-2" /> Create First Party
+      </button>
+    </div>
+  );
 
+  // Create Party Modal
   const CreatePartyModal = () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-gray-900 w-full max-w-2xl p-8 rounded-lg space-y-6">
@@ -226,7 +229,7 @@ const ManageParties = () => {
     </div>
   );
 
-
+  
   // Filtered parties based on search and filter type
   const filteredParties = parties.filter((party) => {
     const term = searchTerm.toLowerCase();
@@ -240,108 +243,75 @@ const ManageParties = () => {
     return matchesTerm && matchesType;
   });
 
-  // Pagination calculations
-  const indexOfLastParty = currentPage * partiesPerPage;
-  const indexOfFirstParty = indexOfLastParty - partiesPerPage;
-  const currentParties = filteredParties.slice(indexOfFirstParty, indexOfLastParty);
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredParties.length / partiesPerPage);
-
-  // Pagination Component
-  const Pagination = () => (
-    <div className="flex justify-center items-center space-x-4 mt-4">
-      <button 
-        onClick={() => paginate(currentPage - 1)} 
-        disabled={currentPage === 1}
-        className="px-4 py-2 bg-gray-800 rounded disabled:opacity-50"
-      >
-        <ChevronLeft />
-      </button>
-      
-      <span className="text-white">
-        Page {currentPage} of {totalPages}
-      </span>
-      
-      <button 
-        onClick={() => paginate(currentPage + 1)} 
-        disabled={currentPage === totalPages}
-        className="px-4 py-2 bg-gray-800 rounded disabled:opacity-50"
-      >
-        <ChevronRight />
-      </button>
-    </div>
-  );
+  // if (loading) return <div className="w-full min-h-screen px-2 bg-gray-900">Loading...</div>;
+  if (error) return <div className="w-full min-h-screen px-2 bg-gray-900">Error: {error}</div>;
 
   return (
     <div className="w-full min-h-screen px-2 bg-gray-900 text-white">
-      <h1 className="text-4xl font-semibold">Manage Parties</h1>
+       <h1 className="text-4xl font-semibold">Manage Parties</h1>
 
-      <div className="mt-8 space-y-6">
-         <div className="flex items-center justify-between  mb-10">
-            <input
-              type="text"
-              placeholder="Search by Name, Role, GST..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-gray-800 text-white w-2/5 px-4 py-2 rounded"
-            />
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="bg-gray-800 text-white px-4 py-2 rounded"
+<div className="mt-8 space-y-6">
+  <div className="flex items-center justify-between  mb-10">
+    <input
+      type="text"
+      placeholder="Search by Name, Role, GST..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="bg-gray-800 text-white w-2/5 px-4 py-2 rounded"
+    />
+    <select
+      value={filterType}
+      onChange={(e) => setFilterType(e.target.value)}
+      className="bg-gray-800 text-white px-4 py-2 rounded"
+    >
+      <option value="All">All</option>
+      <option value="wholesaler">Wholesaler</option>
+      <option value="retailer">Retailer</option>
+      <option value="supplier">Supplier</option>
+    </select>
+    <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              <option value="All">All</option>
-              <option value="wholesaler">Wholesaler</option>
-              <option value="retailer">Retailer</option>
-              <option value="supplier">Supplier</option>
-            </select>
-            <div className="flex items-center space-x-4">
-                    <button 
-                      onClick={() => setIsCreateModalOpen(true)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                      Add Party
-                    </button>
-                    <button 
-                      onClick={refreshHandler}
-                      className={`flex items-center px-4 py-2 rounded transition-transform ${
-                        isRefreshing ? "animate-spin" : ""
-                      }`}
-                    >
-                      <RefreshCw className="text-white" />
-                    </button>
-                  </div>
+              Add Party
+            </button>
+            <button 
+              onClick={refreshHandler}
+              className={`flex items-center px-4 py-2 rounded transition-transform ${
+                isRefreshing ? "animate-spin" : ""
+              }`}
+            >
+              <RefreshCw className="text-white" />
+            </button>
           </div>
-        
-        <div className="space-y-2 lg:h-[80vh] overflow-y-auto">
-          {parties.length === 0 && renderNoPartiesContent()}
-          
-          {isCreateModalOpen && <CreatePartyModal />}
+  </div>
 
-          {currentParties.map((party, index) => (
-            <div 
-              key={party._id || index} 
-              className="flex items-center justify-between py-2 px-6 bg-gray-800 rounded-lg"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="text-lg font-medium">{party.shopName}</div>
-              </div>
-              <div className="flex items-center space-x-4 overflow-hidden">
-                <div>{party.role}</div>
-                <div>{party.gstNumber}</div>
-              </div>
-            </div>
-          ))}
-            {filteredParties.length > partiesPerPage && <Pagination />}
+  <div className="space-y-2 lg:h-[80vh] overflow-y-auto">
+  {parties.length === 0 && renderNoPartiesContent()}
+      
+      {isCreateModalOpen && <CreatePartyModal />}
+
+    
+
+    {filteredParties.map((party, index) => (
+      <div 
+        key={party._id || index} 
+        className="flex items-center justify-between py-2 px-6 bg-gray-800 rounded-lg"
+      >
+        <div className="flex items-center space-x-4">
+          <div className="text-lg font-medium">{party.shopName}</div>
         </div>
-
-        
-       
+        <div className="flex items-center space-x-4 overflow-hidden">
+          <div>{party.role}</div>
+          <div>{party.gstNumber}</div>
+        </div>
       </div>
+    ))}
+
+  </div>
+</div>
+  
     </div>
   );
 };

@@ -6,8 +6,8 @@ const getToken = () => {
   if (userData) {
     try {
       const parsedData = JSON.parse(userData);
-      console.log("Token:", parsedData.token);
-      return parsedData.token || null;
+      // console.log("Token:", parsedData.userdata.token);
+      return parsedData.userdata.token|| null;
     } catch (error) {
       console.error('Error parsing user data from localStorage:', error);
       return null;
@@ -15,6 +15,9 @@ const getToken = () => {
   }
   return null; 
 };
+
+
+
 
 
 const saveLoginResponse = (response) => {
@@ -89,7 +92,15 @@ const removeUserFromLocalStorage = () => {
   localStorage.removeItem("user");
 };
 
-// Export all functions explicitly
+const setTheme = (isDarkMode) => {
+  localStorage.setItem('theme', JSON.stringify(isDarkMode));
+};
+
+const getTheme = () => {
+  const theme = localStorage.getItem('theme');
+  return theme;
+};
+
 export {
   getToken,
   saveLoginResponse,
@@ -100,4 +111,6 @@ export {
   getThemeFromLocalStorage,
   clearThemeFromLocalStorage,
   removeUserFromLocalStorage,
+  setTheme,
+  getTheme
 };
