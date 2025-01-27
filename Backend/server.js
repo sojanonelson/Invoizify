@@ -32,7 +32,8 @@ app.use((req, res, next) => {
   next();
 });
 
-
+const invoiceRoutes = require('./routes/invoiceRoutes');
+app.use('/api/invoice', invoiceRoutes);
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/parties', partyRoutes);
