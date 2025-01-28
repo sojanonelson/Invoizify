@@ -61,9 +61,9 @@ const UserLayout = ({ children }) => {
     <li onClick={() => navigateTo('/user/notifications')} className="px-6 py-3 mx-1 rounded-md flex items-center cursor-pointer transition-all duration-200">
       <span className="material-icons mr-3">notifications</span> Notifications <div className="px-2 ml-2 rounded-full bg-red-500">3</div>
     </li>
-    <li onClick={() => navigateTo('/user/support')} className="px-6 py-3 mx-1 rounded-md flex items-center cursor-pointer transition-all duration-200">
+    {/* <li onClick={() => navigateTo('/user/support')} className="px-6 py-3 mx-1 rounded-md flex items-center cursor-pointer transition-all duration-200">
       <span className="material-icons mr-3">support</span> Support
-    </li>
+    </li> */}
     <li onClick={() => navigateTo('/user/settings')} className="px-6 py-3 mx-1 rounded-md flex items-center cursor-pointer transition-all duration-200">
       <span className="material-icons mr-3">settings</span> Settings
     </li>
@@ -85,7 +85,7 @@ const UserLayout = ({ children }) => {
         </aside>
 
         {/* Main content area */}
-        <main className={`flex-1 overflow-hidden p-0 ${darkMode ? 'bg-gray-700 text-white' : ''}`}>{children}</main>
+        <main className={`flex-1 overflow-x-hidden p-0 ${darkMode ? 'bg-gray-700 text-white' : ''}`}>{children}</main>
       </div>
     </div>
   );

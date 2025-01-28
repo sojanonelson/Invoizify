@@ -19,10 +19,12 @@ server.listen(5173);
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    // width: 1300,
-    // height: 870,
-    minWidth: 1300, // Minimum width
-    minHeight: 970,
+    width: 1300,
+    height: 870,
+    minWidth: 1300,
+    minHeight: 870,
+    
+ 
     show: false,
     
     autoHideMenuBar: true,
@@ -57,7 +59,7 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   if (app.isPackaged) {
-    shell.openExternal('https://your-welcome-url.com')
+    shell.openExternal('https://invoizify.vercel.app/')
   }
   electronApp.setAppUserModelId('com.electron')
 

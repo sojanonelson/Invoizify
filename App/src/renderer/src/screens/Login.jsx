@@ -9,7 +9,7 @@ import Lottie from 'react-lottie';
 import animationData from '../assets/animations/delivery.json'; // Replace with your Lottie JSON file path
 
 const Login = () => {
-  const [email, setEmail] = useState('sojanana6awea@gmail.com');
+  const [email, setEmail] = useState('adminsojan@gmail.com');
   const [password, setPassword] = useState('sojansojan');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

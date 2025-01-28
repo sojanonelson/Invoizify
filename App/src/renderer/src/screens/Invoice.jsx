@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiPlus, FiCheckCircle, FiFileText, FiCalendar } from "react-icons/fi";
+import { FiPlus, FiCheckCircle, FiFileText } from "react-icons/fi";
 
 const Invoice = () => {
   const [clients, setClients] = useState(["John Doe", "Jane Smith", "Robert Brown"]);
@@ -19,8 +19,10 @@ const Invoice = () => {
   const [paymentTerms, setPaymentTerms] = useState("30 days");
   const [notes, setNotes] = useState("");
 
-  // User's plan state (basic plan for this example)
-  const [userPlan, setUserPlan] = useState("basic"); // Change to "premium" for upgraded users
+  const calculateTotal = () => {
+    const productTotal = invoiceItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return productTotal + Number(extraCharges);
+  };
 
   const addNewClient = () => {
     if (newClientName) {
@@ -40,25 +42,20 @@ const Invoice = () => {
     }
   };
 
-  const calculateTotal = () => {
-    const productTotal = invoiceItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    return productTotal + Number(extraCharges);
-  };
-
   return (
-    <div className="bg-gray-100 h-screen p-10 overflow-y-auto flex justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-10 max-w-4xl w-full">
+    <div className=" h-[100vh]  w-full bg-white flex  justify-center pd-10  ">
+      <div className="bg-white w-full overflow-y-scroll   p-8 rounded-lg shadow-lg">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-800 flex items-center">
             <FiFileText className="mr-3 text-blue-600" /> Create Invoice
           </h1>
         </div>
 
         {/* Client Section */}
-        <div className="mb-8">
-          <label className="block text-lg font-medium text-gray-700 mb-2">Client:</label>
-          <div className="flex items-center gap-4">
+        <div className="mb-6">
+          <label className="block text-lg font-medium text-gray-700">Client:</label>
+          <div className="flex items-center w-2/4 gap-2  mt-2">
             <select
               value={selectedClient}
               onChange={(e) => setSelectedClient(e.target.value)}
@@ -73,9 +70,9 @@ const Invoice = () => {
             </select>
             <button
               onClick={() => setShowNewClientInput(true)}
-              className="px-5 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 flex items-center"
             >
-              <FiPlus /> Add New
+              <FiPlus className="mr-2" /> Add New
             </button>
           </div>
           {showNewClientInput && (
@@ -85,11 +82,11 @@ const Invoice = () => {
                 placeholder="Enter new client name"
                 value={newClientName}
                 onChange={(e) => setNewClientName(e.target.value)}
-                className="flex-1 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 p-3 border rounded-lg w-2/4 gap-2  shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
               />
               <button
                 onClick={addNewClient}
-                className="px-5 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
+                className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700"
               >
                 Add Client
               </button>
@@ -97,23 +94,23 @@ const Invoice = () => {
           )}
         </div>
 
-        {/* Date and Payment Terms */}
-        <div className="grid grid-cols-2 gap-8 mb-8">
+        {/* Invoice Details */}
+        <div className="grid grid-cols-2 gap-8 mb-6">
           <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Invoice Date:</label>
+            <label className="block text-lg font-medium text-gray-700">Invoice Date:</label>
             <input
               type="date"
               value={invoiceDate}
               onChange={(e) => setInvoiceDate(e.target.value)}
-              className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 mt-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Payment Terms:</label>
+            <label className="block text-lg font-medium text-gray-700">Payment Terms:</label>
             <select
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value)}
-              className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 mt-2 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="30 days">30 Days</option>
               <option value="60 days">60 Days</option>
@@ -123,15 +120,14 @@ const Invoice = () => {
           </div>
         </div>
 
-        {/* Product Section */}
-        <div className="mb-8">
-          <label className="block text-lg font-medium text-gray-700 mb-2">Products:</label>
-          <div className="flex items-center gap-4">
+        {/* Products */}
+        <div className="mb-6">
+          <label className="block text-lg font-medium text-gray-700">Products:</label>
+          <div className="flex items-center w-2/4 gap-2   mt-2">
             <select
               value={selectedProduct}
               onChange={(e) => setSelectedProduct(e.target.value)}
-              className="flex-1 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
-              disabled={userPlan === "basic"} // Disable for basic plan
+              className="flex-1 p-3 border w-2/4 gap-2  rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">-- Select Product --</option>
               {products.map((product, index) => (
@@ -146,75 +142,59 @@ const Invoice = () => {
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               className="w-24 p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Qty"
-              disabled={userPlan === "basic"} // Disable for basic plan
             />
             <button
               onClick={addProductToInvoice}
-              className="px-5 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center gap-2"
-              disabled={userPlan === "basic"} // Disable for basic plan
+              className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 flex items-center"
             >
-              <FiCheckCircle /> Add
+              <FiCheckCircle className="mr-2" /> Add
             </button>
           </div>
         </div>
 
-        {/* Invoice Items */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Invoice Items:</h2>
-          {invoiceItems.length > 0 ? (
-            <ul className="bg-gray-50 p-4 rounded-lg shadow">
-              {invoiceItems.map((item, index) => (
-                <li
-                  key={index}
-                  className="flex justify-between items-center py-2 border-b last:border-none"
-                >
-                  <span>{item.name} (x{item.quantity})</span>
+        {/* Invoice Summary */}
+        <div className="mb-6">
+          <h2 className="text-lg font-bold text-gray-800">Invoice Summary:</h2>
+          <div className="bg-gray-50 p-4 mt-4 rounded-lg shadow">
+            {invoiceItems.length > 0 ? (
+              invoiceItems.map((item, index) => (
+                <div key={index} className="flex justify-between py-2 border-b last:border-none">
+                  <span>
+                    {item.name} (x{item.quantity})
+                  </span>
                   <span>₹{item.price * item.quantity}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-500">No items added yet.</p>
-          )}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No items added yet.</p>
+            )}
+          </div>
         </div>
 
-        {/* Extra Charges and Total */}
-        <div className="grid grid-cols-2 gap-8 mb-10">
+        {/* Total */}
+        <div className="flex justify-between items-center mb-2">
           <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Extra Charges:</label>
+            <label className="block text-lg font-medium text-gray-700">Extra Charges:</label>
             <input
               type="number"
               value={extraCharges}
               onChange={(e) => setExtraCharges(e.target.value)}
-              className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
-              disabled={userPlan === "basic"} // Disable for basic plan
+              className="p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 mt-2"
             />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-800">Total:</h2>
-            <p className="text-2xl font-bold text-gray-900 mt-2">₹{calculateTotal()}</p>
+            <h2 className="text-2xl font-bold text-gray-900">Total: ₹{calculateTotal()}</h2>
           </div>
+         
         </div>
-
-        {/* Notes */}
-        <div className="mb-8">
-          <label className="block text-lg font-medium text-gray-700 mb-2">Notes:</label>
-          <textarea
-            rows="4"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter any additional notes"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex justify-center">
-          <button className="px-6 py-3 bg-blue-600 text-white text-lg rounded-lg shadow hover:bg-blue-700">
+        <div className="flex justify-center mb-10">
+          <button className="px-8 py-3 bg-blue-600 text-white text-lg rounded-lg shadow hover:bg-blue-700">
             Generate Invoice
           </button>
         </div>
+      
+
+      
       </div>
     </div>
   );

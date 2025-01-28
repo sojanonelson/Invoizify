@@ -35,7 +35,7 @@ const Subscription = () => {
   );
 
   return (
-    <div className="max-h-screen flex flex-col items-start justify-start py-10 bg-gray-100  text-gray-900 lg:px-10">
+    <div className="overflow-y-scroll h-[100vh]  flex flex-col items-start justify-start py-10 bg-gray-100  text-gray-900 lg:px-10">
       <h1 className="text-3xl font-bold mb-8">Subscription Plans</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full  lg:px-32 pt-10">
@@ -61,7 +61,7 @@ const Subscription = () => {
         </div>
 
         {/* Pro Plan */}
-        <div className="bg-gray-800 text-white shadow-lg rounded-lg flex flex-col p-6 h-auto ">
+        <div className="bg-gray-800 text-white shadow-lg rounded-lg flex flex-col p-6  ">
           <h3 className="text-3xl font-semibold text-purple-400 mb-2">Pro</h3>
           <p className="text-xl text-gray-400 line-through">₹7,500/month</p>
           <p className="text-2xl font-bold">₹6,000/month</p>

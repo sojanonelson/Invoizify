@@ -1,6 +1,6 @@
 {
   "name": "invoizify",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "An Electron application with React",
   "main": "./out/main/index.js",
   "author": "Techaso",
@@ -23,6 +23,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
+    "electron-store": "^10.0.1",
     "electron-updater": "^6.1.7",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.469.0",
@@ -51,15 +52,13 @@
     "vite": "^5.3.1"
   },
   "build": {
-    
     "appId": "com.invoizify.app",
     "productName": "Invoizify",
     "files": [
       "**/*"
     ],
-  
     "nsis": {
-      "installerHeader": "build/welcome.bmp", 
+      "installerHeader": "build/welcome.bmp",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": true,
