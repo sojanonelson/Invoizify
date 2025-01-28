@@ -56,7 +56,9 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // Set app user model id for windows
+  if (app.isPackaged) {
+    shell.openExternal('https://your-welcome-url.com')
+  }
   electronApp.setAppUserModelId('com.electron')
 
   // Default open or close DevTools by F12 in development
