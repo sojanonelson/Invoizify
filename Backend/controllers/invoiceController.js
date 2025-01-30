@@ -1,37 +1,64 @@
 const Invoice = require('../models/Invoice');
-const User = require('../models/User');
-const { cloudinary, upload } = require('../utils/cloudinary');
+const InvoiceTemplate = require('../models/InvoiceTemplate');
+const { s3, upload } = require('../utils/s3Upload'); // S3 configuration
+const { protect, checkUserRole } = require('../middleware/authMiddleware');
 
-// Create a new invoice
-const createInvoice = async (req, res) => {
-  const {
-    user,
-    items,
-    totalAmount,
-    tax,
-    discount,
-    grandTotal,
-    coverImages,
-    template,
-    description,
-  } = req.body;
-
+// Get All Invoice Count (Admin)
+const getInvoiceCount = async (req, res) => {
   try {
-    // Validate input
-    if (!user || !items || !totalAmount || !grandTotal) {
-      return res.status(400).json({ message: 'Required fields are missing' });
-    }
+    const count = await Invoice.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching invoice count:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
 
-    // Check if user exists
-    const userExists = await User.findById(user);
-    if (!userExists) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+// Get Most Used Template (Admin)
+const getMostUsedTemplate = async (req, res) => {
+  try {
+    const result = await Invoice.aggregate([
+      { $group: { _id: '$template', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+    res.status(200).json(result[0] || {});
+  } catch (error) {
+    console.error('Error fetching most used template:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
 
-    // Generate a unique invoice number
+// Get All Invoices by User ID
+const getInvoicesByUserId = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const invoices = await Invoice.find({ user: userId }).populate('user').populate('createdBy');
+    res.status(200).json(invoices);
+  } catch (error) {
+    console.error('Error fetching invoices by user:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Get Invoice by Invoice ID
+const getInvoiceById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const invoice = await Invoice.findById(id).populate('user').populate('createdBy');
+    if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
+    res.status(200).json(invoice);
+  } catch (error) {
+    console.error('Error fetching invoice by ID:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Create Invoice
+const createInvoice = async (req, res) => {
+  const { user, items, totalAmount, tax, discount, grandTotal, coverImages, template, description } = req.body;
+  try {
     const invoiceNumber = `INV-${Date.now()}`;
-
-    // Create the invoice
     const invoice = new Invoice({
       invoiceNumber,
       user,
@@ -45,140 +72,34 @@ const createInvoice = async (req, res) => {
       template,
       description,
     });
-
     await invoice.save();
-
-    res.status(201).json({
-      message: 'Invoice created successfully',
-      invoice,
-    });
+    res.status(201).json({ message: 'Invoice created successfully', invoice });
   } catch (error) {
     console.error('Error creating invoice:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
 
-// Get invoice by ID
-const getInvoiceById = async (req, res) => {
+// Update Payment Status
+const updatePaymentStatus = async (req, res) => {
   const { id } = req.params;
-
+  const { status } = req.body;
   try {
-    const invoice = await Invoice.findById(id)
-      .populate('user')
-      .populate('createdBy');
-
-    if (!invoice) {
-      return res.status(404).json({ message: 'Invoice not found' });
-    }
-
-    res.status(200).json(invoice);
+    const invoice = await Invoice.findByIdAndUpdate(id, { status }, { new: true });
+    if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
+    res.status(200).json({ message: 'Payment status updated successfully', invoice });
   } catch (error) {
-    console.error('Error fetching invoice:', error);
+    console.error('Error updating payment status:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
 
-// Get invoices by user ID
-const getInvoicesByUserId = async (req, res) => {
-  const { userId } = req.params;
-
-  try {
-    const invoices = await Invoice.find({ user: userId })
-      .populate('user')
-      .populate('createdBy');
-
-    if (!invoices.length) {
-      return res.status(404).json({ message: 'No invoices found for this user' });
-    }
-
-    res.status(200).json(invoices);
-  } catch (error) {
-    console.error('Error fetching invoices:', error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Upload invoice template
-const uploadInvoiceTemplate = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    // Upload file to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'invoice_templates',
-    });
-
-    res.status(201).json({
-      message: 'Invoice template uploaded successfully',
-      templateUrl: result.secure_url,
-    });
-  } catch (error) {
-    console.error('Error uploading template:', error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Search invoices
-const searchInvoices = async (req, res) => {
-  const { user, startDate, endDate, status } = req.query;
-
-  try {
-    const query = {};
-
-    if (user) query.user = user;
-    if (status) query.status = status;
-    if (startDate && endDate) {
-      query.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
-    }
-
-    const invoices = await Invoice.find(query)
-      .populate('user')
-      .populate('createdBy');
-
-    res.status(200).json(invoices);
-  } catch (error) {
-    console.error('Error searching invoices:', error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Update invoice
-const updateInvoice = async (req, res) => {
-  const { id } = req.params;
-  const updateData = req.body;
-
-  try {
-    const invoice = await Invoice.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
-
-    if (!invoice) {
-      return res.status(404).json({ message: 'Invoice not found' });
-    }
-
-    res.status(200).json({
-      message: 'Invoice updated successfully',
-      invoice,
-    });
-  } catch (error) {
-    console.error('Error updating invoice:', error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Delete invoice
+// Delete Invoice
 const deleteInvoice = async (req, res) => {
   const { id } = req.params;
-
   try {
     const invoice = await Invoice.findByIdAndDelete(id);
-
-    if (!invoice) {
-      return res.status(404).json({ message: 'Invoice not found' });
-    }
-
+    if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
     res.status(200).json({ message: 'Invoice deleted successfully' });
   } catch (error) {
     console.error('Error deleting invoice:', error);
@@ -186,13 +107,106 @@ const deleteInvoice = async (req, res) => {
   }
 };
 
+// Upload Template (Admin) - S3 Upload
+const uploadTemplate = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    // Upload to S3
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `templates/${Date.now()}_${req.file.originalname}`,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+      ACL: 'public-read',
+    };
+
+    const result = await s3.upload(params).promise();
+
+    // Save template details in the database
+    const template = new InvoiceTemplate({
+      templateName: req.body.templateName,
+      coverImages: req.body.coverImages,
+      description: req.body.description,
+      templateDesign: result.Location, // S3 URL
+      status: req.body.status,
+    });
+    await template.save();
+
+    res.status(201).json({ message: 'Template uploaded successfully', template });
+  } catch (error) {
+    console.error('Error uploading template:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Get Template by ID (Admin)
+const getTemplateById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const template = await InvoiceTemplate.findById(id);
+    if (!template) return res.status(404).json({ message: 'Template not found' });
+    res.status(200).json(template);
+  } catch (error) {
+    console.error('Error fetching template by ID:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Update Template Details (Admin)
+const updateTemplate = async (req, res) => {
+  const { id } = req.params;
+  const { templateName, coverImages, description, status } = req.body;
+  try {
+    const template = await InvoiceTemplate.findByIdAndUpdate(
+      id,
+      { templateName, coverImages, description, status },
+      { new: true }
+    );
+    if (!template) return res.status(404).json({ message: 'Template not found' });
+    res.status(200).json({ message: 'Template updated successfully', template });
+  } catch (error) {
+    console.error('Error updating template:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Get All Available Templates (User)
+const getAllTemplates = async (req, res) => {
+  try {
+    const templates = await InvoiceTemplate.find({}, { templateDesign: 0 });
+    res.status(200).json(templates);
+  } catch (error) {
+    console.error('Error fetching templates:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Update Template Rating (User)
+const updateTemplateRating = async (req, res) => {
+  const { id } = req.params;
+  const { rating } = req.body;
+  try {
+    const template = await InvoiceTemplate.findByIdAndUpdate(id, { rating }, { new: true });
+    if (!template) return res.status(404).json({ message: 'Template not found' });
+    res.status(200).json({ message: 'Rating updated successfully', template });
+  } catch (error) {
+    console.error('Error updating rating:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
 module.exports = {
-  createInvoice,
-  getInvoiceById,
+  getInvoiceCount,
+  getMostUsedTemplate,
   getInvoicesByUserId,
-  uploadInvoiceTemplate,
-  searchInvoices,
-  updateInvoice,
+  getInvoiceById,
+  createInvoice,
+  updatePaymentStatus,
   deleteInvoice,
-  upload,
+  uploadTemplate,
+  getTemplateById,
+  updateTemplate,
+  getAllTemplates,
+  updateTemplateRating,
 };

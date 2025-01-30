@@ -1,28 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const {
-  createInvoice,
-  getInvoiceById,
+  getInvoiceCount,
+  getMostUsedTemplate,
   getInvoicesByUserId,
-  uploadInvoiceTemplate,
-  searchInvoices,
-  updateInvoice,
+  getInvoiceById,
+  createInvoice,
+  updatePaymentStatus,
   deleteInvoice,
-  upload,
+  uploadTemplate,
+  getTemplateById,
+  updateTemplate,
+  getAllTemplates,
+  updateTemplateRating,
 } = require('../controllers/invoiceController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, checkUserRole } = require('../middleware/authMiddleware');
+const upload = require('../utils/s3Upload'); // S3 upload middleware
 
-// Invoice Template Routes
-router.post('/template/upload', protect, upload.single('file'), uploadInvoiceTemplate);
-
-// Invoice Creation Routes
-router.post('/create', protect, createInvoice);
-router.get('/:id', protect, getInvoiceById);
+// Invoice Routes
+router.get('/count', protect, checkUserRole(['admin']), getInvoiceCount);
+router.get('/most-used-template', protect, checkUserRole(['admin']), getMostUsedTemplate);
 router.get('/user/:userId', protect, getInvoicesByUserId);
-
-// Invoice Controllers Routes
-router.get('/search', protect, searchInvoices);
-router.put('/:id', protect, updateInvoice);
+router.get('/:id', protect, getInvoiceById);
+router.post('/', protect, createInvoice);
+router.put('/:id/status', protect, updatePaymentStatus);
 router.delete('/:id', protect, deleteInvoice);
+
+// Template Routes
+router.post('/template/upload', protect, checkUserRole(['admin']), upload.single('file'), uploadTemplate);
+router.get('/template/:id', protect, checkUserRole(['admin']), getTemplateById);
+router.put('/template/:id', protect, checkUserRole(['admin']), updateTemplate);
+router.get('/templates', protect, getAllTemplates);
+router.put('/template/:id/rating', protect, updateTemplateRating);
 
 module.exports = router;
