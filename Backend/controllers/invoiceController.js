@@ -2,7 +2,7 @@ const Invoice = require('../models/Invoice');
 const InvoiceTemplate = require('../models/InvoiceTemplate');
 const { s3, upload } = require('../utils/s3Upload'); // S3 configuration
 const { protect, checkUserRole } = require('../middleware/authMiddleware');
-
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
 // Get All Invoice Count (Admin)
 const getInvoiceCount = async (req, res) => {
   try {
@@ -107,7 +107,6 @@ const deleteInvoice = async (req, res) => {
   }
 };
 
-// Upload Template (Admin) - S3 Upload
 const uploadTemplate = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
@@ -121,14 +120,15 @@ const uploadTemplate = async (req, res) => {
       ACL: 'public-read',
     };
 
-    const result = await s3.upload(params).promise();
+    const command = new PutObjectCommand(params);
+    const result = await s3.send(command);
 
     // Save template details in the database
     const template = new InvoiceTemplate({
       templateName: req.body.templateName,
       coverImages: req.body.coverImages,
       description: req.body.description,
-      templateDesign: result.Location, // S3 URL
+      templateDesign: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`, // S3 URL
       status: req.body.status,
     });
     await template.save();
