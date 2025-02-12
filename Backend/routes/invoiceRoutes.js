@@ -14,8 +14,9 @@ const {
   getAllTemplates,
   updateTemplateRating,
 } = require('../controllers/invoiceController');
-const { protect, checkUserRole } = require('../middleware/authMiddleware');
-const upload = require('../utils/s3Upload'); // S3 upload middleware
+const { protect } = require('../middleware/authMiddleware');
+const {upload} = require('../utils/s3Upload'); // S3 upload middleware
+const checkUserRole = require('../middleware/checkUserRole');
 
 // Invoice Routes
 router.get('/count', protect, checkUserRole(['admin']), getInvoiceCount);
