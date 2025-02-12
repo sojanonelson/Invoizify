@@ -1,9 +1,8 @@
-import React, { useState, useEffect ,forwardRef  } from "react";
+import React, { useState, useEffect ,  } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser, removeUserFromLocalStorage } from "../services/localstorageService";
 import { MdDashboard, MdSettings, MdHelp, MdLogout, MdNotifications } from "react-icons/md"; // Added Notification icon
 import { FaBars } from "react-icons/fa"; // Menu icon
-import { BsWifi, BsWifiOff } from "react-icons/bs"; // Network icons
 import Logo from "../assets/logo.png"; // Logo path
 
 import { getProfilePicture } from "../services/generalService";

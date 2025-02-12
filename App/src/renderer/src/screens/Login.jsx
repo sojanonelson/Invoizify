@@ -1,163 +1,190 @@
-import React, { useState } from 'react';
-import Logo from "../assets/logo.png";
-import { MdEmail, MdLock } from 'react-icons/md';
-import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
-import { TailSpin } from 'react-loader-spinner';
-import { loginUser } from '../services/authService';
-import { saveLoginResponse } from '../services/localstorageService';
-import Lottie from 'react-lottie';
-import animationData from '../assets/animations/delivery.json'; // Replace with your Lottie JSON file path
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { MdEmail, MdLock } from 'react-icons/md'
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
+import Lottie from 'react-lottie'
+import animationData from '../assets/animations/delivery.json'
+import { useNavigate } from 'react-router-dom'
+import Logo from '../assets/logo.png'
+import { loginUser } from '../services/authService'
 
 const Login = () => {
-  const [email, setEmail] = useState('adminsojan@gmail.com');
-  const [password, setPassword] = useState('sojansojan');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  console.log('Heloooooooooooo')
+  const [email, setEmail] = useState('adminsojan@gmail.com')
+  const [password, setPassword] = useState('sojansojan')
+  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const navigate = useNavigate()
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+    return emailPattern.test(email)
+  }
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setEmailError('')
+    setPasswordError('')
+
+    if (!email) {
+      setEmailError('Email is required')
+    } else if (!validateEmail(email)) {
+      setEmailError('Invalid email address')
+    }
+
+    if (!password) {
+      setPasswordError('Password is required')
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters')
+    }
+
+    if (emailError || passwordError || !email || !password) {
+      setLoading(false)
+      return
+    }
 
     try {
-      const credentials = { email, password };
-      const response = await loginUser(credentials);
-
-      if (response.userdata.role) {
-        saveLoginResponse(response);
-        window.location.hash = '/user/dashboard';
+      const response = await loginUser({ email, password })
+      if (response?.userdata?.role) {
+        localStorage.setItem('user', JSON.stringify(response))
+        navigate('/user/dashboard')
       } else {
-        setError("Invalid password or email")
-        throw new Error('Invalid credentials.');
+        throw new Error('Invalid credentials')
       }
     } catch (err) {
-      
-      setError("Invalid password or email");
+      setError(err.message || 'Invalid email or password')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const lottieOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
-    },
-  };
+  }
 
   return (
-    <div className="flex flex-row h-screen bg-gray-100">
-     {/* Left Section: Login */}
-<div className="w-2/5 h-full flex flex-col pd-10 items-center justify-between bg-white shadow-lg">
-  <div className="w-full max-w-md p-6 pt-[40%]">
-    <div className="text-center mb-6">
-      <img src={Logo} alt="App Logo" className="w-24 mx-auto" />
-      <h1 className="text-2xl font-bold text-indigo-600 mt-4">Welcome Back!</h1>
-      <p className="text-sm text-gray-600">Log in to access your account</p>
-    </div>
-    {error && (
-      <div className="bg-red-100 text-red-700 px-4 py-2 rounded-md text-sm mb-4">
-        {error}
-      </div>
-    )}
-    <form onSubmit={handleLogin} className="space-y-6">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email Address
-        </label>
-        <div className="flex items-center border rounded-md mt-1 focus-within:ring-2 focus-within:ring-indigo-400">
-          <MdEmail className="text-gray-400 ml-2" />
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-2 focus:outline-none"
-            placeholder="Enter your email"
-          />
-        </div>
-      </div>
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <div className="flex items-center border rounded-md mt-1 focus-within:ring-2 focus-within:ring-indigo-400 relative">
-          <MdLock className="text-gray-400 ml-2" />
-          <input
-            type={showPassword ? 'text' : 'password'}
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-2 focus:outline-none"
-            placeholder="Enter your password"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 text-gray-500"
-          >
-            {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-          </button>
-        </div>
-      </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className={`w-full py-2 px-4 rounded-md focus:outline-none focus:ring-2 text-white flex items-center justify-center ${
-          loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-        }`}
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden flex"
       >
-        {loading ? <TailSpin height="24" width="24" color="#ffffff" /> : 'Log In'}
-      </button>
-    </form>
-    <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <button
-            onClick={() => (window.location.hash = '/register')}
-            className="text-indigo-600 hover:underline"
+        <motion.div className="w-full md:w-1/2 p-12 space-y-8 relative">
+          <motion.img src={Logo} alt="Logo" className="w-1/6 mb-8" />
+          <motion.h1 className="text-4xl font-bold text-gray-900">Welcome Back!</motion.h1>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-6">
+              <motion.div>
+                <div className="relative">
+                  <MdEmail className="absolute top-4 left-4 text-gray-400" />
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all"
+                    placeholder="Email Address"
+                  />
+                </div>
+                {emailError && (
+                  <motion.span className="text-red-500 text-sm">{emailError}</motion.span>
+                )}
+              </motion.div>
+
+              <motion.div>
+                <div className="relative">
+                  <MdLock className="absolute top-4 left-4 text-gray-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-12 pr-12 py-3 rounded-lg border-2 border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all"
+                    placeholder="Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-indigo-600 transition-colors"
+                  >
+                    {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+                  </button>
+                </div>
+                {passwordError && (
+                  <motion.span className="text-red-500 text-sm">{passwordError}</motion.span>
+                )}
+              </motion.div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Signing In...</span>
+                  </div>
+                ) : (
+                  'Sign In'
+                )}
+              </motion.button>
+            </div>
+            {error && <motion.span className="text-red-500 text-sm">{error}</motion.span>}
+          </form>
+
+          <motion.div className="text-center text-gray-600">
+            Don't have an account?{' '}
+            <button
+              onClick={() => navigate('/register')}
+              className="text-indigo-600 font-semibold hover:underline"
+            >
+              Create Account
+            </button>
+          </motion.div>
+        </motion.div>
+
+        <div className="hidden md:block w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="relative z-10 p-12 h-full flex flex-col justify-center text-white"
           >
-            Create an Account
-          </button>
-        </p>
-  </div>
-  
-  {/* Footer Section */}
-  <footer className="w-full text-center py-4 bg-gray-100 border-t text-sm text-gray-500">
-    &copy; {new Date().getFullYear()} Reserved by Techaso Solutions
-  </footer>
-</div>
-
-      {/* Right Section */}
-      <div className="w-3/5 h-full bg-gradient-to-r select-none from-indigo-700 to-indigo-900 text-white flex items-center justify-center relative">
-        <div className="p-8 text-left">
-          <h1 className="text-5xl font-bold mb-6">Simplify Your Invoicing</h1>
-          <p className="text-lg mb-6">
-            Our invoice billing software helps you generate invoices, track payments, and manage clients effortlessly.
-            Discover how it can transform your business.
-          </p>
-          <ul className="space-y-3">
-            <li className="flex items-center">
-              <span className="h-2 w-2 bg-white rounded-full mr-2"></span> Easy Invoice Generation
-            </li>
-            <li className="flex items-center">
-              <span className="h-2 w-2 bg-white rounded-full mr-2"></span> Real-Time Payment Tracking
-            </li>
-            <li className="flex items-center">
-              <span className="h-2 w-2 bg-white rounded-full mr-2"></span> Customizable Templates
-            </li>
-          </ul>
+            <Lottie
+              options={{
+                animationData: animationData,
+                loop: true,
+                autoplay: true
+              }}
+              height={400}
+              width="100%"
+            />
+            <h2 className="text-4xl font-bold mb-6">Streamline Your Workflow</h2>
+            <ul className="space-y-4">
+              {['Instant Invoice Generation', 'Real-time Analytics', 'Secure Cloud Storage'].map(
+                (feature, index) => (
+                  <motion.li
+                    key={index}
+                    className="flex items-center space-x-3"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                  >
+                    <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    </div>
+                    <span>{feature}</span>
+                  </motion.li>
+                )
+              )}
+            </ul>
+          </motion.div>
         </div>
-        <div className="absolute bottom-0 right-4 w-[50%]">
-          <Lottie options={lottieOptions} />
-        </div>
-      </div>
+      </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

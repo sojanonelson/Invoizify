@@ -85,7 +85,7 @@ const UserLayout = ({ children }) => {
         </aside>
 
         {/* Main content area */}
-        <main className={`flex-1 overflow-x-hidden p-0 ${darkMode ? 'bg-gray-700 text-white' : ''}`}>{children}</main>
+        <main className={`flex-1 overflow-x-hidden p-0 ${darkMode ? 'bg-gray-800 text-white' : ''}`}>{children}</main>
       </div>
     </div>
   );
