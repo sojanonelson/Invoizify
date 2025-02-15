@@ -31,7 +31,7 @@ app.use((req, res, next) => {
     "connect-src 'self' http://localhost:5000;");
   next();
 });
-
+const notificationRoutes = require('./routes/notificationRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 app.use('/api/invoice', invoiceRoutes);
 // Routes
@@ -39,7 +39,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/parties', partyRoutes);
 app.use('/api/subscription/', subscription);
 app.use('/api/payments', paymentRoutes);
-
+app.use('/api/notifications', notificationRoutes);
 app.get('/', (req, res) => {
   res.send('API is running...');
 });

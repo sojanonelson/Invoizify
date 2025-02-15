@@ -1,0 +1,148 @@
+🌐 INVOIZIFY NOTIFICATION SYSTEM API DOCUMENTATION 📄
+
+==================================================
+📌 NOTIFICATION TYPES
+==================================================
+| Type                      | Description                                  |
+|---------------------------|----------------------------------------------|
+| invoice                   | Invoice creation/update notification        |
+| payment_reminder          | Credit repayment reminder                   |
+| subscription_expiry       | User subscription expiry warning            |
+| payment_link              | Contains online payment link                |
+| security_alert            | Unauthorized activity detection            |
+| system_update             | Software update notifications              |
+| failed_payment            | Payment processing failure                 |
+| admin_subscription_expiry | Admin alert for expired user subscriptions |
+
+==================================================
+🔐 AUTHENTICATION
+==================================================
+All endpoints require Bearer token in Authorization header:
+Authorization: Bearer <JWT_TOKEN>
+
+==================================================
+📤 API ENDPOINTS
+==================================================
+ 
+1️⃣ GET USER NOTIFICATIONS
+-------------------------
+🔹 Method: GET
+🔹 URL: /api/notifications/user
+🔹 Description: Get unread notifications for authenticated user
+🔹 Response:
+   ✅ 200 OK
+   [
+     {
+       "_id": "665f4d8b7c1a4c001e8f4d2a",
+       "type": "payment_reminder",
+       "message": "Invoice #INV-123 payment due in 3 days",
+       "relatedInvoice": "665f4d8b7c1a4c001e8f4d2b",
+       "paymentLink": "https://api.invoizify/pay/INV-123",
+       "read": false,
+       "createdAt": "2024-06-03T12:34:56.789Z"
+     }
+   ]
+
+2️⃣ MARK NOTIFICATION AS READ
+----------------------------
+🔹 Method: PUT
+🔹 URL: /api/notifications/:id/read
+🔹 Parameters:
+   - id (path): Notification ID
+🔹 Response:
+   ✅ 200 OK
+   {
+     "_id": "665f4d8b7c1a4c001e8f4d2a",
+     "read": true,
+     "message": "Notification marked as read"
+   }
+
+3️⃣ GET ADMIN NOTIFICATIONS (ADMIN ONLY)
+---------------------------------------
+🔹 Method: GET
+🔹 URL: /api/notifications/admin
+🔹 Description: Get unread admin notifications
+🔹 Response:
+   ✅ 200 OK
+   [
+     {
+       "_id": "665f4d8b7c1a4c001e8f4d2c",
+       "type": "admin_subscription_expiry",
+       "message": "User 665f4d8b7c1a4c001e8f4d2d subscription expired",
+       "relatedUser": "665f4d8b7c1a4c001e8f4d2d",
+       "read": false,
+       "createdAt": "2024-06-03T12:35:00.123Z"
+     }
+   ]
+
+==================================================
+🚨 ERROR RESPONSES
+==================================================
+❌ 401 Unauthorized
+{
+  "message": "Unauthorized - Invalid/Missing token"
+}
+
+❌ 403 Forbidden
+{
+  "message": "Access denied - Insufficient permissions"
+}
+
+❌ 404 Not Found
+{
+  "message": "Notification not found"
+}
+
+❌ 500 Internal Server Error
+{
+  "message": "Server error",
+  "error": "Error details..."
+}
+
+==================================================
+🔗 SAMPLE NOTIFICATION PAYLOADS
+==================================================
+💳 Payment Reminder:
+{
+  "type": "payment_reminder",
+  "message": "Invoice #INV-456 payment due tomorrow",
+  "relatedInvoice": "665f4d8b7c1a4c001e8f4d2e",
+  "paymentLink": "https://api.invoizify/pay/INV-456"
+}
+
+🔒 Security Alert:
+{
+  "type": "security_alert",
+  "message": "Unauthorized login attempt detected",
+  "metadata": {
+    "ip": "192.168.1.100",
+    "location": "New York, US",
+    "device": "Chrome on Windows"
+  }
+}
+
+🆕 System Update:
+{
+  "type": "system_update",
+  "message": "New feature added: Bulk invoicing",
+  "metadata": {
+    "version": "1.2.0",
+    "releaseDate": "2024-06-05"
+  }
+}
+
+
+# Get User Notifications
+curl -X GET 'https://api.invoizify.com/api/notifications/user' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json'
+
+# Mark Notification as Read
+curl -X PUT 'https://api.invoizify.com/api/notifications/665f4d8b7c1a4c001e8f4d2a/read' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json'
+
+# Get Admin Notifications (Admin Only)
+curl -X GET 'https://api.invoizify.com/api/notifications/admin' \
+-H 'Authorization: Bearer ADMIN_JWT_TOKEN' \
+-H 'Content-Type: application/json'

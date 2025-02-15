@@ -3,6 +3,7 @@ const InvoiceTemplate = require('../models/InvoiceTemplate');
 const { s3, upload } = require('../utils/s3Upload'); // S3 configuration
 const { protect, checkUserRole } = require('../middleware/authMiddleware');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const { createNotification } = require('./notificationController');
 // Get All Invoice Count (Admin)
 const getInvoiceCount = async (req, res) => {
   try {
@@ -73,6 +74,11 @@ const createInvoice = async (req, res) => {
       description,
     });
     await invoice.save();
+    await createNotification(user, 'invoice', {
+      message: `New invoice created: ${invoiceNumber}`,
+      invoiceId: invoice._id,
+      paymentLink: `https://yourapp.com/pay/${invoiceNumber}`
+    });
     res.status(201).json({ message: 'Invoice created successfully', invoice });
   } catch (error) {
     console.error('Error creating invoice:', error);
