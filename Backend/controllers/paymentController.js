@@ -1,6 +1,7 @@
 // controllers/paymentController.js
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const { createNotification } = require('./notificationController');
 
 // Initialize Razorpay instance
 const razorpayInstance = new Razorpay({
@@ -28,17 +29,20 @@ const createOrder = async (req, res) => {
 };
 
 // Controller for verifying payment signature
-const verifyPayment = (req, res) => {
+const verifyPayment = async (req, res) => {
     const { order_id, payment_id, signature } = req.body;
 
     const generatedSignature = crypto
         .createHmac('sha256', 'i4NIfDEGIC9b9xE9BhlAtobc') // Replace with Razorpay Key Secret
         .update(`${order_id}|${payment_id}`)
         .digest('hex');
-
+    
     if (generatedSignature === signature) {
         res.json({ success: true });
     } else {
+        await createNotification(req.user.id, 'failed_payment', {
+            message: 'Payment failed due to invalid signature'
+        });
         res.status(400).json({ success: false, message: 'Invalid signature' });
     }
 };

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Subscription = require('../models/Subscription');
+const { createNotification, createAdminNotification } = require('./notificationController');
 
 // Create a new subscription
 const createSubscription = async (req, res) => {
@@ -43,7 +44,21 @@ const createSubscription = async (req, res) => {
   
       user.subscription = subscription;
       await user.save();
-  
+      const daysBeforeExpiry = 3; // Send reminder 3 days before
+      const reminderDate = new Date(expireDate);
+      reminderDate.setDate(remireDate.getDate() - daysBeforeExpiry);
+      
+      await createNotification(userId, 'subscription_expiry', {
+        message: `Your subscription expires in ${daysBeforeExpiry} days`,
+        subscriptionId: subscription._id
+      });
+      
+      // When subscription expires
+      await createAdminNotification(
+        `User ${userId}'s subscription has expired`,
+        'admin_subscription_expiry',
+        { userId, subscriptionId: subscription._id }
+      );
       res.status(201).json({
         message: 'Subscription created successfully',
         subscription: {

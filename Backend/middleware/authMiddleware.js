@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { createNotification } = require('../controllers/notificationController');
 
 const protect = async (req, res, next) => {
   let token;
@@ -16,7 +17,9 @@ const protect = async (req, res, next) => {
       if (!req.user) {
         return res.status(401).json({ message: 'User not found. Invalid token.' });
       }
-
+      await createNotification(decoded.id, 'security_alert', {
+        message: 'Unauthorized access attempt detected'
+      });
       next();
     } catch (error) {
       console.error('Token verification error:', error); // For debugging
