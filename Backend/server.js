@@ -33,6 +33,11 @@ app.use((req, res, next) => {
 });
 const notificationRoutes = require('./routes/notificationRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
+// Add this with other route imports
+const settingsRoutes = require('./routes/settingsRoutes');
+
+// Add this with other route middleware
+app.use('/api/settings', settingsRoutes);
 app.use('/api/invoice', invoiceRoutes);
 // Routes
 app.use('/api/users', userRoutes);

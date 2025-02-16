@@ -1,0 +1,287 @@
+🌐 INVOIZIFY SETTINGS API DOCUMENTATION 📄  
+==================================================  
+
+📌 SETTINGS CATEGORIES  
+==================================================  
+| Category            | Description                                  |  
+|---------------------|----------------------------------------------|  
+| Theme               | Customize application theme (light/dark mode, colors) |  
+| Payment Methods     | Manage saved payment methods (Stripe, Razorpay, etc.) |  
+| Notifications       | Configure notification preferences (email, SMS, push) |  
+
+==================================================  
+🔐 AUTHENTICATION  
+==================================================  
+All endpoints require Bearer token in Authorization header:  
+`Authorization: Bearer <JWT_TOKEN>`  
+
+==================================================  
+📤 API ENDPOINTS  
+==================================================  
+
+1️⃣ GET THEME SETTINGS  
+-------------------------  
+🔹 Method: GET  
+🔹 URL: `/api/settings/theme`  
+🔹 Description: Retrieve current theme settings for the authenticated user  
+🔹 Response:  
+   ✅ 200 OK  
+   ```json
+   {
+     "mode": "dark",
+     "primaryColor": "#1E3A8A",
+     "accentColor": "#3B82F6"
+   }
+   ```
+
+2️⃣ UPDATE THEME SETTINGS  
+-------------------------  
+🔹 Method: POST  
+🔹 URL: `/api/settings/theme`  
+🔹 Request Body:  
+   ```json
+   {
+     "mode": "light",
+     "primaryColor": "#4F46E5",
+     "accentColor": "#6366F1"
+   }
+   ```  
+🔹 Response:  
+   ✅ 200 OK  
+   ```json
+   {
+     "mode": "light",
+     "primaryColor": "#4F46E5",
+     "accentColor": "#6366F1"
+   }
+   ```
+
+3️⃣ GET PAYMENT METHODS  
+-------------------------  
+🔹 Method: GET  
+🔹 URL: `/api/settings/payment-methods`  
+🔹 Description: Retrieve saved payment methods for the authenticated user  
+🔹 Response:  
+   ✅ 200 OK  
+   ```json
+   [
+     {
+       "id": "665f4d8b7c1a4c001e8f4d2a",
+       "provider": "stripe",
+       "last4": "4242",
+       "isDefault": true
+     }
+   ]
+   ```
+
+4️⃣ ADD PAYMENT METHOD  
+-------------------------  
+🔹 Method: POST  
+🔹 URL: `/api/settings/payment-methods`  
+🔹 Request Body:  
+   ```json
+   {
+     "provider": "razorpay",
+     "methodId": "pm_1P9QZ2JzJzJzJzJzJzJzJzJz",
+     "cardLast4": "1234",
+     "fingerprint": "abc123"
+   }
+   ```  
+🔹 Response:  
+   ✅ 201 Created  
+   ```json
+   {
+     "id": "665f4d8b7c1a4c001e8f4d2b",
+     "provider": "razorpay",
+     "last4": "1234",
+     "isDefault": false
+   }
+   ```
+
+5️⃣ DELETE PAYMENT METHOD  
+-------------------------  
+🔹 Method: DELETE  
+🔹 URL: `/api/settings/payment-methods/:id`  
+🔹 Parameters:  
+   - `id` (path): Payment method ID to delete  
+🔹 Response:  
+   ✅ 200 OK  
+   ```json
+   {
+     "message": "Payment method deleted successfully"
+   }
+   ```
+
+6️⃣ GET NOTIFICATION SETTINGS  
+-------------------------  
+🔹 Method: GET  
+🔹 URL: `/api/settings/notifications`  
+🔹 Description: Retrieve notification preferences for the authenticated user  
+🔹 Response:  
+   ✅ 200 OK  
+   ```json
+   {
+     "email": {
+       "invoices": true,
+       "payments": true,
+       "promotions": false
+     },
+     "push": {
+       "invoices": true,
+       "payments": false
+     },
+     "sms": {
+       "paymentReminders": true
+     }
+   }
+   ```
+
+7️⃣ UPDATE NOTIFICATION SETTINGS  
+-------------------------  
+🔹 Method: POST  
+🔹 URL: `/api/settings/notifications`  
+🔹 Request Body:  
+   ```json
+   {
+     "email": {
+       "invoices": false,
+       "payments": true,
+       "promotions": false
+     },
+     "push": {
+       "invoices": true,
+       "payments": true
+     },
+     "sms": {
+       "paymentReminders": false
+     }
+   }
+   ```  
+🔹 Response:  
+   ✅ 200 OK  
+   ```json
+   {
+     "email": {
+       "invoices": false,
+       "payments": true,
+       "promotions": false
+     },
+     "push": {
+       "invoices": true,
+       "payments": true
+     },
+     "sms": {
+       "paymentReminders": false
+     }
+   }
+   ```
+
+==================================================  
+🚨 ERROR RESPONSES  
+==================================================  
+❌ 401 Unauthorized  
+```json
+{
+  "message": "Unauthorized - Invalid/Missing token"
+}
+```
+
+❌ 403 Forbidden  
+```json
+{
+  "message": "Access denied - Insufficient permissions"
+}
+```
+
+❌ 404 Not Found  
+```json
+{
+  "message": "Settings not found"
+}
+```
+
+❌ 500 Internal Server Error  
+```json
+{
+  "message": "Server error",
+  "error": "Error details..."
+}
+```
+
+==================================================  
+🔗 SAMPLE CURL REQUESTS  
+==================================================  
+
+# Get Theme Settings  
+```bash
+curl -X GET 'https://api.invoizify.com/api/settings/theme' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json'
+```
+
+# Update Theme Settings  
+```bash
+curl -X POST 'https://api.invoizify.com/api/settings/theme' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json' \
+-d '{
+  "mode": "dark",
+  "primaryColor": "#1E3A8A",
+  "accentColor": "#3B82F6"
+}'
+```
+
+# Get Payment Methods  
+```bash
+curl -X GET 'https://api.invoizify.com/api/settings/payment-methods' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json'
+```
+
+# Add Payment Method  
+```bash
+curl -X POST 'https://api.invoizify.com/api/settings/payment-methods' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json' \
+-d '{
+  "provider": "stripe",
+  "methodId": "pm_1P9QZ2JzJzJzJzJzJzJzJzJz",
+  "cardLast4": "4242",
+  "fingerprint": "abc123"
+}'
+```
+
+# Delete Payment Method  
+```bash
+curl -X DELETE 'https://api.invoizify.com/api/settings/payment-methods/665f4d8b7c1a4c001e8f4d2a' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json'
+```
+
+# Get Notification Settings  
+```bash
+curl -X GET 'https://api.invoizify.com/api/settings/notifications' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json'
+```
+
+# Update Notification Settings  
+```bash
+curl -X POST 'https://api.invoizify.com/api/settings/notifications' \
+-H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+-H 'Content-Type: application/json' \
+-d '{
+  "email": {
+    "invoices": false,
+    "payments": true,
+    "promotions": false
+  },
+  "push": {
+    "invoices": true,
+    "payments": true
+  },
+  "sms": {
+    "paymentReminders": false
+  }
+}'
+```
